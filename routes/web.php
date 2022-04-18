@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
+use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,3 +18,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [HomeController::class, 'index']);
+// front page post
+Route::get('/post/{id}', [PostController::class, 'singlePost'])->name('post');
+
+// comments
+Route::post('/post/{id}/comment', [CommentController::class, 'store']);
+// this is with route model binding
+Route::get('/comment/{comment}', [CommentController::class, 'edit']);
+Route::delete('/comment/{id}', [CommentController::class, 'destroy']);
+Route::put('/comment/{id}', [CommentController::class, 'update']);
+
+
+

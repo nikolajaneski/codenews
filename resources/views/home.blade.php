@@ -7,10 +7,8 @@
     <title>Document</title>
 </head>
 <body>
-    Welcome
-
     @forelse ($posts as $post)
-        <h3><strong>{{ $post->title }}</strong></h3>
+        <h3><strong><a href="{{ route('post', ['id' => $post->id]) }}" >{{ $post->title }}</a></strong></h3>
 
         <p>{{ $post->getExcerpt() }}</p>
     @empty

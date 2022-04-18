@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
-use App\Models\Post;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -36,16 +35,21 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $comment = new Comment();
+        $comment->post_id = $request->id;
+        $comment->comment = $request->comment;
+        $comment->save();
+
+        return back();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Post  $post
+     * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show(Comment $comment)
     {
         //
     }
@@ -53,42 +57,45 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Post  $post
+     * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit(Comment $comment)
     {
-        //
+        // compact('comment') == ['comment' => $comment];
+
+        return view('comment.edit', compact('comment'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Post  $post
+     * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
-        //
+        Comment::where('id', $id)
+                ->update([
+                    'comment' => $request->comment
+                ]);
+
+        $comment = Comment::findOrFail($id);
+
+        return redirect('post/'.$comment->post_id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Post  $post
+     * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        //
-    }
+        Comment::findOrFail($id)->delete();
 
-    public function singlePost($id) 
-    {
-        return view('singlePost', [
-            'post' => Post::with('comments')->findOrFail($id),
-            'posts' => Post::limit(3)->get(),
-        ]);
+        return back();
     }
 }
