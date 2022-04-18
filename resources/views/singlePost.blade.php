@@ -1,5 +1,9 @@
 <h3><strong>{{ $post->title }}</strong></h3>
-
+@forelse ($post->categories as $category)
+    <small><i><a href="/category/{{ $category->id }}">{{ $category->name }}</a></i></small>
+@empty
+    
+@endforelse
 
 <p>{{ $post->content }}</p>
 

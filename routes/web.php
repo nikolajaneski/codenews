@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
@@ -18,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [HomeController::class, 'index']);
+Route::get('/category/{id}', [HomeController::class, 'byCategory']);
+
 // front page post
 Route::get('/post/{id}', [PostController::class, 'singlePost'])->name('post');
 
@@ -29,4 +32,14 @@ Route::delete('/comment/{id}', [CommentController::class, 'destroy']);
 Route::put('/comment/{id}', [CommentController::class, 'update']);
 
 
+// admin panel
+Route::get('/admin', function() {
+    return view('dashboard');
+});
 
+// categories
+Route::get('/admin/categories', [CategoryController::class, 'index']);
+Route::post('/admin/category', [CategoryController::class, 'store']);
+
+
+Route::get('/admin/post/{id}', [PostController::class, 'show']);
