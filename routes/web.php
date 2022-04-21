@@ -58,3 +58,9 @@ Route::post('/admin/tags', [TagController::class, 'store']);
 // admin post
 Route::get('/admin/posts', [PostController::class, 'index']);
 Route::get('/admin/post/{id}', [PostController::class, 'show']);
+Route::get('/admin/post', [PostController::class, 'create']);
+Route::post('/admin/post', [PostController::class, 'store']);
+
+
+Route::post('/getAutocompleteTags', [TagController::class, 'getAutocompleteTags']);
+

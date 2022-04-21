@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -25,7 +28,9 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+
+        return view('admin.post.create', compact('categories'));
     }
 
     /**
@@ -36,7 +41,36 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $post = Post::create([
+            'title' => $request->title,
+            'content' => $request->content
+        ]);
+
+        foreach($request->categories as $key => $id) {
+            DB::table('post_category')->insert([
+              'post_id' => $post->id,
+              'category_id' => $id  
+            ]);
+        }
+
+        $tags = explode(', ', $request->tags);
+        foreach($tags as $key => $tagName) {
+
+            DB::table('tags')->updateOrInsert([
+                'name' => $tagName
+            ]);
+
+            $tag = Tag::where(['name' => $tagName])->first();
+
+            DB::table('post_tag')->insert([
+                'post_id' => $post->id,
+                'tag_id' => $tag->id
+            ]);
+
+        }
+
+        return redirect('/post/'.$post->id);
     }
 
     /**
@@ -89,9 +123,25 @@ class PostController extends Controller
 
     public function singlePost($id) 
     {
+        $post = Post::with('comments', 'categories', 'tags')->findOrFail($id);
+
+        $tags = $post->tags;
+
+        $tagIds = $tags->pluck('id');
+
+        $postsIds = DB::table('posts')
+                    ->select(DB::raw('DISTINCT(posts.id)'))
+                    ->join('post_tag', 'posts.id', '=', 'post_tag.post_id')
+                    ->whereIn('post_tag.tag_id', $tagIds)
+                    ->whereNotIn('post_tag.post_id', [$post->id])
+                    ->get();
+
+        $posts = Post::whereIn('id', $postsIds->pluck('id'))->limit(3)->inRandomOrder()->get();
+
+
         return view('singlePost', [
-            'post' => Post::with('comments', 'categories')->findOrFail($id),
-            'posts' => Post::limit(3)->get(),
+            'post' => $post,
+            'posts' => $posts
         ]);
     }
 }

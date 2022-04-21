@@ -1,4 +1,5 @@
 <h3><strong>{{ $post->title }}</strong></h3>
+<small><strong><i>Categories: </i></strong></small>
 @forelse ($post->categories as $category)
     <small><i><a href="/category/{{ $category->id }}">{{ $category->name }}</a></i></small>
 @empty
@@ -6,6 +7,14 @@
 @endforelse
 
 <p>{{ $post->content }}</p>
+<hr>
+
+<small><strong><i>Tags: </i></strong></small>
+@forelse ($post->tags as $tag)
+    <small><i><a href="/tag/{{ $tag->id }}">{{ $tag->name }}</a></i></small>
+@empty
+    
+@endforelse
 
 <hr>
 

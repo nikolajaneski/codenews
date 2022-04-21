@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TagController extends Controller
@@ -81,5 +82,12 @@ class TagController extends Controller
     public function destroy(Tag $tag)
     {
         //
+    }
+
+    public function getAutocompleteTags(Request $request)
+    {
+        $tags = Tag::where('name', $request->name.'%');
+
+        return json_encode(['tags', $tags]);
     }
 }

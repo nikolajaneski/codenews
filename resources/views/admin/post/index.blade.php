@@ -17,8 +17,10 @@
 </table>    
 
 
-<form action="/admin/post" method="POST">
-    @csrf
-    <input type="text" name="name" id="name">
-    <button type="submit">Add post</button>
-</form>
+<br>
+<br>
+<br>
+<br>
+
+
+<a href="/admin/post">Add new post</a>
