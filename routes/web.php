@@ -7,6 +7,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\TagController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,4 +64,46 @@ Route::post('/admin/post', [PostController::class, 'store']);
 
 
 Route::post('/getAutocompleteTags', [TagController::class, 'getAutocompleteTags']);
+
+// composer require guzzlehttp/guzzle
+
+Route::get('/cat-fact', function() {
+
+    $response = Http::get('https://catfact.ninja/fact');
+    
+    $factArr = json_decode($response->body(), true);
+
+    return $factArr['fact'];
+
+});
+
+
+Route::get('/bitcoin-stats', function() {
+    $response = Http::get('https://api.coindesk.com/v1/bpi/currentprice.json');
+
+    $data = json_decode($response->body());
+
+    return 'Current price of BTC is ' . $data->bpi->USD->rate . ' $';
+
+});
+
+Route::get('/user/create', function() {
+
+
+    $response = Http::withHeaders([
+        'app-id' => '6268527d8fd8a37e35300290'
+    ])
+    ->withBody(json_encode([
+            'firstName' => 'Nikola',
+            'lastName' => 'Janeski',
+            'email' => 'nikola2.janeski@gmail.com'
+    ]), 'application/json')
+    ->post('https://dummyapi.io/data/v1/user/create');
+
+dd($response->body());
+    $users = json_decode($response->body())->data;
+
+
+    dd($users[0]);
+});
 
