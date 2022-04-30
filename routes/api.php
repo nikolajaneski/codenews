@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PostController;
+use App\Http\Middleware\ValidateApiKey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +19,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+// Route::get('/test', function() {
+//     return response()->json([
+//         'firstName' => 'Nikola'
+//     ]);
+// });
+
+
+Route::get('/posts', [PostController::class, 'apiGetPosts'])->middleware(ValidateApiKey::class);
+
+Route::post('/post', [PostController::class, 'apiStorePost'])->middleware(ValidateApiKey::class);

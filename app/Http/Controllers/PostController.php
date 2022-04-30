@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
+use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Post;
@@ -143,5 +145,43 @@ class PostController extends Controller
             'post' => $post,
             'posts' => $posts
         ]);
+    }
+
+    public function apiGetPosts()
+    {
+        return response()->json(['data' => PostResource::collection(Post::all())]);
+    }
+
+    public function apiStorePost(StorePostRequest $request) 
+    {
+
+        $post = Post::create([
+            'title' => $request->title,
+            'content' => $request->content
+        ]);
+
+        $tags = explode(', ', $request->tags);
+        foreach($tags as $key => $tagName) {
+
+            DB::table('tags')->updateOrInsert([
+                'name' => $tagName
+            ]);
+
+            $tag = Tag::where(['name' => $tagName])->first();
+
+            DB::table('post_tag')->insert([
+                'post_id' => $post->id,
+                'tag_id' => $tag->id
+            ]);
+
+        }
+
+        return response()->json([
+                            'data' => [
+                                'post' => new PostResource($post)
+                            ],
+                            'message' => 'Post inserted'
+                            ], 200);
+
     }
 }
